@@ -57,9 +57,6 @@
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
 
-- name: Stopping service if it was running
-  service: name=easy-bag-store state=stopped
-
 - name: Install service
   copy: remote_src=True src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store.service" dest=/usr/lib/systemd/system
 
@@ -67,4 +64,4 @@
   file: path=/var/log/easy-bag-store state=directory owner=easy-bag-store group=easy-bag-store mode=0755
 
 - name: Start and enable service
-  service: name=easy-bag-store state=started enabled=true
+  service: name=easy-bag-store state=restarted enabled=true
