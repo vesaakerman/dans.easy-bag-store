@@ -60,5 +60,8 @@
 - name: Install service
   copy: remote_src=True src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store.service" dest=/usr/lib/systemd/system
 
+- name: Create log directory for service
+  file: path=/var/log/easy-bag-store state=directory owner=easy-bag-store group=easy-bag-store mode=0755
+
 - name: Start and enable service
   service: name=easy-bag-store state=started enabled=true
