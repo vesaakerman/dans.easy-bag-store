@@ -1,0 +1,16 @@
+dependencies: []
+
+galaxy_info:
+  author: DANS-KNAW
+  description: EASY Bag Store for CentOS/RHEL 7
+  company: "DANS-KNAW"
+  license: "Apache 2.0"
+  min_ansible_version: 2.0
+  platforms:
+    - name: EL
+      versions:
+      - 7
+  galaxy_tags:
+    - digital_preservation
+
+allow_duplicates: yes
