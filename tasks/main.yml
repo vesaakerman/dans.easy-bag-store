@@ -40,6 +40,10 @@
           regexp="^bag-store.base-uri=.*$"
           replace="bag-store.base-uri={{ easy_bag_store_baseuri }}"
 
+- name: Configure application (staging base-dir)
+  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
+          regexp="^staging.base-dir=.*$"
+          replace="staging.base-dir={{ easy_bag_store_staging_basedir }}"
 
 - name: Create a user for the bag-store
   user: name=easy-bag-store
