@@ -57,8 +57,11 @@
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
 
+- debug: msg="{{ ansible_distribution_version }}"
+
 - name: Install service
   copy: remote_src=True src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store.service" dest=/usr/lib/systemd/system
+  when: ansible_distribution_version >= 7
 
 - name: Create log directory for service
   file: path=/var/log/easy-bag-store state=directory owner=easy-bag-store group=easy-bag-store mode=0755
