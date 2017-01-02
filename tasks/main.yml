@@ -30,20 +30,20 @@
         src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store"
         state=link
 
-- name: Configure application (base-dir)
-  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
-          regexp="^bag-store.base-dir=.*$"
-          replace="bag-store.base-dir={{ easy_bag_store_basedir }}"
-
-- name: Configure application (base-uri)
-  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
-          regexp="^bag-store.base-uri=.*$"
-          replace="bag-store.base-uri={{ easy_bag_store_baseuri }}"
-
-- name: Configure application (staging base-dir)
-  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
-          regexp="^staging.base-dir=.*$"
-          replace="staging.base-dir={{ easy_bag_store_staging_basedir }}"
+#- name: Configure application (base-dir)
+#  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
+#          regexp="^bag-store.base-dir=.*$"
+#          replace="bag-store.base-dir={{ easy_bag_store_basedir }}"
+#
+#- name: Configure application (base-uri)
+#  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
+#          regexp="^bag-store.base-uri=.*$"
+#          replace="bag-store.base-uri={{ easy_bag_store_baseuri }}"
+#
+#- name: Configure application (staging base-dir)
+#  replace: dest="{{ easy_bag_store_installation_path }}/easy-bag-store/cfg/application.properties"
+#          regexp="^staging.base-dir=.*$"
+#          replace="staging.base-dir={{ easy_bag_store_staging_basedir }}"
 
 - name: Create a user for the bag-store
   user: name=easy-bag-store
@@ -57,11 +57,13 @@
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
 
-- debug: msg="{{ ansible_distribution_version }}"
-
-- name: Install service
+- name: Install service (systemd variant)
   copy: remote_src=True src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store.service" dest=/usr/lib/systemd/system
-  when: ansible_distribution_version >= 7
+  when: ansible_lsb.major_release|int > 6
+
+- name: Install service (initd variant)
+  copy: remote_src=True src="{{ easy_bag_store_installation_path }}/easy-bag-store/bin/easy-bag-store-initd.sh" dest=/etc/init.d/easy-bag-store mode=a+x
+  when: ansible_lsb.major_release|int < 7
 
 - name: Create log directory for service
   file: path=/var/log/easy-bag-store state=directory owner=easy-bag-store group=easy-bag-store mode=0755

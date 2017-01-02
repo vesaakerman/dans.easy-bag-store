@@ -3,4 +3,4 @@ easy_bag_store_installation_package: "~/.m2/repository/nl/knaw/dans/easy/easy-ba
 easy_bag_store_installation_path: "/usr/local"
 easy_bag_store_basedir: "/var/local/bag-store"
 easy_bag_store_baseuri: "http://localhost"
-easy_bag_store_staging_basedir: "/var/tmp/easy-bag-store-staging"
+easy_bag_store_staging_basedir: "/var/tmp/bag-staging"
