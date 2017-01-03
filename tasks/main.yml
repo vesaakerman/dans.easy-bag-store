@@ -13,6 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+- name: Install LSB to read OS version
+  yum: name=redhat-lsb-core
+
+- name: reload variables (redhat-lsb-core does not work without this step)
+  setup:
+
 - name: Remove any previously installed copy of the same version
   file: dest="{{ easy_bag_store_installation_path }}/easy-bag-store-{{ easy_bag_store_version }}" state=absent
 
