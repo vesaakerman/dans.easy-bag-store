@@ -1,4 +1,5 @@
-dependencies: []
+dependencies:
+  - dans.easy-includes
 
 galaxy_info:
   author: DANS-KNAW
