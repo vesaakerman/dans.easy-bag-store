@@ -4,13 +4,18 @@
 - name: reload variables (redhat-lsb-core does not work without this step)
   setup:
 
+# Hack fix to force ansible to evaluate the variable, as it might not be in scope in easy-includes
+- local_action: command echo {{ easy_bag_store_version }}
+  become: no
+  register: mod_version
+
 - include_role:
     name: dans.easy-includes
     tasks_from: install_easy_module_cmd
   vars:
     easy_modules_installation_base_path: "/usr/local"
     easy_module_name: easy-bag-store
-    easy_module_version: "{{ easy_bag_store_version }}"
+    easy_module_version: '{{ mod_version.stdout }}'
 
 - name: Create a user for the bag-store
   user: name=easy-bag-store
