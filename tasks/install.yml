@@ -21,7 +21,7 @@
   user: name=easy-bag-store
 
 - name: Make vagrant member of easy-bag-store group
-  user: name=vagrant group=easy-bag-store
+  user: name=vagrant groups=easy-bag-store append=yes
   when: inventory_hostname == "deasy"
 
 - name: Configure application
