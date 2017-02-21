@@ -1,2 +1,5 @@
 - include: install.yml
-  when: ansible_local.versions.easy_bag_store != easy_bag_store_version or (force_reinstalls|bool)
+  when: (ansible_local is undefined)
+        or (ansible_local.easy_bag_store is undefined)
+        or (ansible_local.easy_bag_store.version != easy_bag_store_version)
+        or ((force_reinstalls is defined) and (force_reinstalls|bool))

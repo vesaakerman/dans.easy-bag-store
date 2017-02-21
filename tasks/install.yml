@@ -1,31 +1,31 @@
-- name: Install LSB to read OS version
-  yum: name=redhat-lsb-core
-
-- name: reload variables (redhat-lsb-core does not work without this step)
-  setup:
-
-# Hack fix to force ansible to evaluate the variable, as it might not be in scope in easy-includes
+# Hack fix to force ansible to evaluate the variable, as it may not be in scope in easy-includes
 - local_action: command echo {{ easy_bag_store_version }}
   become: no
   register: mod_version
 
 - include_role:
     name: dans.easy-includes
-    tasks_from: install_easy_module_cmd
+    tasks_from: install_easy_module
   vars:
-    easy_modules_installation_base_path: "/usr/local"
-    easy_module_name: easy-bag-store
-    easy_module_version: '{{ mod_version.stdout }}'
+    easy_module_name: "easy-bag-store"
+    easy_module_version: "{{ mod_version.stdout }}"
 
-- name: Create a user for the bag-store
-  user: name=easy-bag-store
+- include_role:
+    name: dans.easy-includes
+    tasks_from: install_cmd
+  vars:
+    easy_module_name: "easy-bag-store"
+    easy_module_version: "{{ mod_version.stdout }}"
 
-- name: Make vagrant member of easy-bag-store group
-  user: name=vagrant group=easy-bag-store
-  when: inventory_hostname == "deasy"
+- include_role:
+    name: dans.easy-includes
+    tasks_from: install_service
+  vars:
+    easy_module_name: "easy-bag-store"
+    easy_module_version: "{{ mod_version.stdout }}"
 
 - name: Configure application
-  replace: dest=/usr/local/easy-bag-store/cfg/application.properties
+  replace: dest={{ easy_modules_installation_base_path }}/easy-bag-store/cfg/application.properties
            regexp="^{{ item.key }}.*$"
            replace="{{ item.key }}={{ item.value }}"
   with_items:
@@ -33,21 +33,18 @@
     - { key: 'staging.base-dir',    value: '{{ easy_bag_store_staging_basedir }}' }
 
 - name: Create bag-store base directory
-  file: path="{{ easy_bag_store_basedir }}"  state=directory owner=easy-bag-store group=easy-bag-store mode=0775
+  file: path="{{ easy_bag_store_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
 
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
 
-- name: Install service (systemd variant)
-  copy: remote_src=True src="/usr/local/easy-bag-store/bin/easy-bag-store.service" dest=/usr/lib/systemd/system
-  when: ansible_lsb.major_release|int > 6
+- name: Make vagrant member of easy-bag-store group
+  user: name=vagrant group=easy-bag-store
+  when: inventory_hostname == "deasy"
 
-- name: Install service (initd variant)
-  copy: remote_src=True src="/usr/local/easy-bag-store/bin/easy-bag-store-initd.sh" dest=/etc/init.d/easy-bag-store mode=a+x
-  when: ansible_lsb.major_release|int < 7
-
-- name: Create log directory for service
-  file: path=/var/log/easy-bag-store state=directory owner=easy-bag-store group=easy-bag-store mode=0755
-
-- name: Start and enable service
-  service: name=easy-bag-store state=restarted enabled=true
+- include_role:
+    name: dans.easy-includes
+    tasks_from: start_service
+  vars:
+    easy_module_name: "easy-bag-store"
+    easy_module_version: "{{ mod_version.stdout }}"
