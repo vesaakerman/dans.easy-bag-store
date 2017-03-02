@@ -24,16 +24,35 @@
     easy_module_name: "easy-bag-store"
     easy_module_version: "{{ mod_version.stdout }}"
 
-- name: Configure application
+- name: Configure application (application.properties)
   replace: dest={{ easy_modules_installation_base_path }}/easy-bag-store/cfg/application.properties
            regexp="^{{ item.key }}.*$"
            replace="{{ item.key }}={{ item.value }}"
   with_items:
-    - { key: 'bag-store.base-dir',  value: '{{ easy_bag_store_basedir }}' }
-    - { key: 'staging.base-dir',    value: '{{ easy_bag_store_staging_basedir }}' }
+    - { key: 'staging.base-dir',          value: '{{ easy_bag_store_staging_basedir }}' }
+    - { key: 'daemon.external-base-uri',  value: '{{ easy_bag_store_external_base_uri }}' }
 
-- name: Create bag-store base directory
-  file: path="{{ easy_bag_store_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
+- name: Remove default store from stores.properties
+  lineinfile:
+      dest: "{{ easy_modules_installation_base_path }}/easy-bag-store/cfg/stores.properties"
+      line: "default=/var/local/store"
+      state: absent
+  when: easy_bag_stores_remove_default|bool
+
+- name: Configure application (stores.properties)
+  lineinfile:
+      dest: "{{ easy_modules_installation_base_path }}/easy-bag-store/cfg/stores.properties"
+      line: "{{ item.name }}={{ item.base_dir }}"
+  with_items: "{{ easy_bag_stores }}"
+
+- name: Create bag-store base directories
+  file:
+    path: "{{ item.base_dir }}"
+    state: "directory"
+    owner: "easy-bag-store"
+    group: "easy-bag-store"
+    mode: "0775"
+  with_items: "{{ easy_bag_stores }}"
 
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
