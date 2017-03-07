@@ -37,13 +37,13 @@
       dest: "{{ easy_modules_installation_base_path }}/easy-bag-store/cfg/stores.properties"
       line: "default=/var/local/store"
       state: absent
-  when: easy_bag_stores_remove_default|bool
+  when: easy_bag_store_remove_default_store|bool
 
 - name: Configure application (stores.properties)
   lineinfile:
       dest: "{{ easy_modules_installation_base_path }}/easy-bag-store/cfg/stores.properties"
       line: "{{ item.name }}={{ item.base_dir }}"
-  with_items: "{{ easy_bag_stores }}"
+  with_items: "{{ easy_bag_store_list }}"
 
 - name: Create bag-store base directories
   file:
@@ -52,7 +52,7 @@
     owner: "easy-bag-store"
     group: "easy-bag-store"
     mode: "0775"
-  with_items: "{{ easy_bag_stores }}"
+  with_items: "{{ easy_bag_store_list }}"
 
 - name: Create a staging directory
   file: path="{{ easy_bag_store_staging_basedir }}" state=directory owner=easy-bag-store group=easy-bag-store mode=0775
