@@ -2,3 +2,5 @@ easy_bag_store_version: "1.x-SNAPSHOT"
 easy_bag_store_staging_basedir: "/var/tmp/bag-staging"
 easy_bag_store_external_base_uri: "http://localhost:20110/"
 easy_bag_store_remove_default_store: no
+easy_bag_store_list:
+  - { name: "default",  base_dir: "/var/local/bag-store" }
